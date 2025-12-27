@@ -1,7 +1,14 @@
-const CACHE_VERSION = "isquat-static-v1";
+const CACHE_VERSION = "isquat-static-v2";
 const OFFLINE_URL = "/offline.html";
+const DEV_HOSTS = ["localhost", "127.0.0.1", "[::1]"];
+const IS_DEV = DEV_HOSTS.includes(self.location.hostname);
 
 self.addEventListener("install", (event) => {
+  if (IS_DEV) {
+    self.skipWaiting();
+    return;
+  }
+
   event.waitUntil(
     caches
       .open(CACHE_VERSION)
@@ -11,6 +18,16 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
+  if (IS_DEV) {
+    event.waitUntil(
+      caches
+        .keys()
+        .then((keys) => Promise.all(keys.map((key) => caches.delete(key))))
+        .then(() => self.clients.claim())
+    );
+    return;
+  }
+
   event.waitUntil(
     caches
       .keys()
@@ -26,6 +43,10 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  if (IS_DEV) {
+    return;
+  }
+
   const { request } = event;
   const url = new URL(request.url);
 

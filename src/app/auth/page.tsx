@@ -1,10 +1,9 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { signIn, signUp } from "@/app/auth/actions";
 import { getCurrentUser } from "@/lib/auth";
 
 type AuthPageProps = {
-  searchParams?: { error?: string };
+  searchParams?: { error?: string; redirectTo?: string };
 };
 
 const errorCopy: Record<string, string> = {
@@ -16,8 +15,15 @@ const errorCopy: Record<string, string> = {
 
 export default async function AuthPage({ searchParams }: AuthPageProps) {
   const user = await getCurrentUser();
+  const redirectTo =
+    searchParams?.redirectTo === "/dashboard/add"
+      ? searchParams.redirectTo
+      : null;
 
   if (user) {
+    if (user.role !== "admin" && redirectTo) {
+      redirect(redirectTo);
+    }
     redirect(user.role === "admin" ? "/admin" : "/dashboard");
   }
 
@@ -36,17 +42,13 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
             visits.
           </p>
         </div>
-        <div className="sub-hero-actions">
-          <Link className="btn ghost" href="/">
-            Back to home
-          </Link>
-        </div>
       </header>
 
       {errorMessage ? <div className="auth-error">{errorMessage}</div> : null}
 
       <div className="auth-grid">
         <form className="panel form-panel" action={signIn}>
+          <input name="redirectTo" type="hidden" value={redirectTo ?? ""} />
           <h2>Sign in</h2>
           <div className="form-field">
             <label htmlFor="signin-email">Email</label>
@@ -79,6 +81,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
         </form>
 
         <form className="panel form-panel" action={signUp}>
+          <input name="redirectTo" type="hidden" value={redirectTo ?? ""} />
           <h2>Create account</h2>
           <div className="form-field">
             <label htmlFor="signup-name">Name</label>

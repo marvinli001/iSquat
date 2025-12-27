@@ -71,6 +71,11 @@ export default async function AdminPage() {
 
   return (
     <main className="page admin-page">
+      <nav className="subpage-nav">
+        <Link className="btn ghost" href="/">
+          Back to home
+        </Link>
+      </nav>
       <header className="sub-hero">
         <div>
           <p className="eyebrow">Admin console</p>
@@ -80,9 +85,6 @@ export default async function AdminPage() {
           </p>
         </div>
         <div className="sub-hero-actions">
-          <Link className="btn ghost" href="/">
-            Back to home
-          </Link>
           <form action={signOut}>
             <button className="btn ghost" type="submit">
               Sign out

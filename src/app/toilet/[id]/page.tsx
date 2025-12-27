@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPinIcon, StarIcon } from "@/components/Icons";
+import FindNearestButton from "@/components/FindNearestButton";
 import SessionControls from "@/components/SessionControls";
 import {
   defaultReviews,
@@ -22,8 +23,8 @@ export default function ToiletDetail({ params }: PageProps) {
 
   const reviews = reviewsBySlug[toilet.slug] ?? defaultReviews;
   const mapQuery = encodeURIComponent(`${toilet.name} ${toilet.address}`);
-  const googleMaps = `https://maps.google.com/?q=${mapQuery}`;
-  const appleMaps = `https://maps.apple.com/?q=${mapQuery}`;
+  const googleMaps = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
+  const appleMaps = `https://maps.apple.com/?daddr=${mapQuery}`;
   const nearby = nearbyToilets
     .filter((item) => item.slug !== toilet.slug)
     .slice(0, 3);
@@ -55,24 +56,26 @@ export default function ToiletDetail({ params }: PageProps) {
             </div>
             <div className="detail-address">
               <MapPinIcon className="icon-pin" />
-              <span>{toilet.address}</span>
               <details className="map-actions">
-                <summary>Open in maps</summary>
+                <summary aria-label={`Open maps for ${toilet.address}`}>
+                  {toilet.address}
+                </summary>
                 <div className="map-links">
-                  <a href={googleMaps} rel="noreferrer" target="_blank">
-                    Google Maps
-                  </a>
                   <a href={appleMaps} rel="noreferrer" target="_blank">
                     Apple Maps
+                  </a>
+                  <a href={googleMaps} rel="noreferrer" target="_blank">
+                    Google Maps
                   </a>
                 </div>
               </details>
             </div>
           </div>
           <div className="detail-actions">
-            <button className="btn primary" type="button">
-              Find nearest toilet
-            </button>
+            <FindNearestButton
+              className="btn primary"
+              label="Find nearest toilet"
+            />
             <button className="btn outline" type="button">
               Add a review
             </button>
@@ -145,7 +148,7 @@ export default function ToiletDetail({ params }: PageProps) {
 
           <aside className="detail-sidebar">
             <div className="panel">
-              <h3>Access notes</h3>
+              <h3>Location notes</h3>
               <p className="panel-body">{toilet.accessNotes}</p>
             </div>
             <div className="panel">

@@ -10,6 +10,21 @@ import {
   verifyPassword,
 } from "@/lib/auth";
 
+const allowedRedirects = new Set(["/dashboard/add"]);
+
+function getRedirectTarget(formData: FormData) {
+  const redirectTo = formData.get("redirectTo")?.toString() ?? "";
+  return allowedRedirects.has(redirectTo) ? redirectTo : null;
+}
+
+function buildAuthErrorUrl(code: string, redirectTarget: string | null) {
+  const params = new URLSearchParams({ error: code });
+  if (redirectTarget) {
+    params.set("redirectTo", redirectTarget);
+  }
+  return `/auth?${params.toString()}`;
+}
+
 function getAdminEmails() {
   const raw = process.env.ADMIN_EMAILS ?? "";
   return raw
@@ -22,9 +37,11 @@ export async function signIn(formData: FormData) {
   const emailInput = formData.get("email")?.toString() ?? "";
   const password = formData.get("password")?.toString() ?? "";
   const email = normalizeEmail(emailInput);
+  const redirectTarget = getRedirectTarget(formData);
+  const errorUrl = (code: string) => buildAuthErrorUrl(code, redirectTarget);
 
   if (!email || !password) {
-    redirect("/auth?error=missing");
+    redirect(errorUrl("missing"));
   }
 
   const result = await db.execute({
@@ -47,16 +64,19 @@ export async function signIn(formData: FormData) {
     | undefined;
 
   if (!row || row.status !== "active") {
-    redirect("/auth?error=invalid");
+    redirect(errorUrl("invalid"));
   }
 
   const isValid = await verifyPassword(password, row.password_hash);
 
   if (!isValid) {
-    redirect("/auth?error=invalid");
+    redirect(errorUrl("invalid"));
   }
 
   await createSession(row.id);
+  if (row.role !== "admin" && redirectTarget) {
+    redirect(redirectTarget);
+  }
   redirect(row.role === "admin" ? "/admin" : "/dashboard");
 }
 
@@ -65,13 +85,15 @@ export async function signUp(formData: FormData) {
   const emailInput = formData.get("email")?.toString() ?? "";
   const password = formData.get("password")?.toString() ?? "";
   const email = normalizeEmail(emailInput);
+  const redirectTarget = getRedirectTarget(formData);
+  const errorUrl = (code: string) => buildAuthErrorUrl(code, redirectTarget);
 
   if (!email || !password) {
-    redirect("/auth?error=missing");
+    redirect(errorUrl("missing"));
   }
 
   if (password.length < 8) {
-    redirect("/auth?error=weak");
+    redirect(errorUrl("weak"));
   }
 
   const existing = await db.execute({
@@ -80,7 +102,7 @@ export async function signUp(formData: FormData) {
   });
 
   if (existing.rows.length > 0) {
-    redirect("/auth?error=exists");
+    redirect(errorUrl("exists"));
   }
 
   const adminEmails = getAdminEmails();
@@ -97,6 +119,9 @@ export async function signUp(formData: FormData) {
   });
 
   await createSession(userId);
+  if (role !== "admin" && redirectTarget) {
+    redirect(redirectTarget);
+  }
   redirect(role === "admin" ? "/admin" : "/dashboard");
 }
 

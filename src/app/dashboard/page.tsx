@@ -18,6 +18,11 @@ export default async function DashboardPage() {
 
   return (
     <main className="page">
+      <nav className="subpage-nav">
+        <Link className="btn ghost" href="/">
+          Back to home
+        </Link>
+      </nav>
       <header className="sub-hero">
         <div>
           <p className="eyebrow">Member dashboard</p>
@@ -27,9 +32,6 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="sub-hero-actions">
-          <Link className="btn ghost" href="/">
-            Back to home
-          </Link>
           <form action={signOut}>
             <button className="btn ghost" type="submit">
               Sign out
@@ -53,9 +55,9 @@ export default async function DashboardPage() {
             <div className="rating-card-meta">
               Add location details and optional photos.
             </div>
-            <button className="btn primary" type="button">
+            <Link className="btn primary" href="/dashboard/add">
               Start submission
-            </button>
+            </Link>
           </div>
           <div className="rating-card">
             <div className="rating-card-title">Write a review</div>

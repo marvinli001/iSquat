@@ -32,6 +32,9 @@ export default function DistrictLatestSection({
   const subtitle = selectedDistrict
     ? `Recently added toilets in ${selectedDistrict}.`
     : "Recently added toilets across Auckland.";
+  const districtQuery = selectedDistrict
+    ? `?district=${encodeURIComponent(selectedDistrict)}`
+    : "";
 
   return (
     <>
@@ -72,11 +75,11 @@ export default function DistrictLatestSection({
             <h2 className="section-title">Latest in the area</h2>
             <p className="section-sub">{subtitle}</p>
           </div>
-          <button className="btn ghost" type="button">
+          <Link className="btn ghost" href={`/latest${districtQuery}`}>
             See more
-          </button>
+          </Link>
         </div>
-        <div className="latest-grid">
+        <div className="card-grid">
           {latestToilets.map((toilet) => (
             <Link
               className="toilet-card"
@@ -84,7 +87,6 @@ export default function DistrictLatestSection({
               key={toilet.id}
             >
               <div className="card-media" data-tone={toilet.tone}>
-                <div className="card-chip">Approved</div>
                 <div className="card-rating">
                   <StarIcon className="icon-star" />
                   <span>{toilet.rating.toFixed(1)}</span>

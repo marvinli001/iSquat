@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { StarIcon } from "@/components/Icons";
 import DistrictLatestSection from "@/components/DistrictLatestSection";
+import FindNearestButton from "@/components/FindNearestButton";
 import SessionControls from "@/components/SessionControls";
 import { districts, topRatedToilets, toilets } from "@/lib/mockData";
 
@@ -26,10 +27,10 @@ const steps = [
 ];
 
 export default function Home() {
-  const topRatedId = topRatedToilets[0]?.id ?? "t1";
+  const addMissingHref = "/auth?redirectTo=/dashboard/add";
 
   return (
-    <main className="page">
+    <main className="page home-page">
       <header className="hero">
         <nav className="top-nav">
           <div className="brand">
@@ -37,9 +38,7 @@ export default function Home() {
             <span className="brand-sub">Auckland toilet ratings</span>
           </div>
           <div className="nav-actions">
-            <button className="btn ghost" type="button">
-              Find nearest
-            </button>
+            <FindNearestButton className="btn ghost" label="Find nearest" />
             <SessionControls />
           </div>
         </nav>
@@ -53,12 +52,13 @@ export default function Home() {
               upload up to 3 photos, and help the community keep it fresh.
             </p>
             <div className="hero-actions">
-              <button className="btn primary" type="button">
-                Find nearest toilet
-              </button>
-              <button className="btn outline" type="button">
+              <FindNearestButton
+                className="btn primary"
+                label="Find nearest toilet"
+              />
+              <Link className="btn outline" href={addMissingHref}>
                 Add missing toilet
-              </button>
+              </Link>
             </div>
             <div className="hero-stats">
               {heroStats.map((stat) => (
@@ -110,7 +110,7 @@ export default function Home() {
               Ten of the highest rated toilets right now.
             </p>
           </div>
-          <Link className="btn ghost" href={`/toilet/${topRatedId}`}>
+          <Link className="btn ghost" href="/top">
             See top 10
           </Link>
         </div>
@@ -152,9 +152,9 @@ export default function Home() {
             details before it appears on iSquat.
           </p>
         </div>
-        <button className="btn primary" type="button">
+        <Link className="btn primary" href={addMissingHref}>
           Submit a location
-        </button>
+        </Link>
       </section>
 
       <section className="section">
