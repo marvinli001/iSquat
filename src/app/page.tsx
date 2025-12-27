@@ -8,7 +8,6 @@ import { districts, topRatedToilets, toilets } from "@/lib/mockData";
 const heroStats = [
   { value: "1,248", label: "Approved toilets" },
   { value: "4.6", label: "Avg rating across Auckland" },
-  { value: "3", label: "Photos max per review" },
 ];
 
 const steps = [

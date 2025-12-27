@@ -11,13 +11,39 @@ import {
 } from "@/lib/mockData";
 
 type PageProps = {
-  params: { id: string };
+  params: Promise<{ id: string }> | { id: string };
 };
 
-export default function ToiletDetail({ params }: PageProps) {
-  const toilet = toilets.find((item) => item.id === params.id);
+export default async function ToiletDetail({ params }: PageProps) {
+  const resolvedParams = await params;
+  const toilet = toilets.find((item) => item.id === resolvedParams.id);
 
   if (!toilet) {
+    if (process.env.NODE_ENV !== "production") {
+      return (
+        <main className="page detail-page with-back">
+          <nav className="subpage-nav">
+            <Link className="btn ghost back-link" href="/">
+              Back to home
+            </Link>
+          </nav>
+          <section className="panel">
+            <h2>Toilet not found</h2>
+            <p className="panel-body">
+              Try a sample toilet ID from the list below.
+            </p>
+            <div className="chip-row">
+              {toilets.map((item) => (
+                <Link className="chip" href={`/toilet/${item.id}`} key={item.id}>
+                  {item.name}
+                </Link>
+              ))}
+            </div>
+          </section>
+        </main>
+      );
+    }
+
     notFound();
   }
 
@@ -30,10 +56,10 @@ export default function ToiletDetail({ params }: PageProps) {
     .slice(0, 3);
 
   return (
-    <main className="page detail-page">
+    <main className="page detail-page with-back">
       <header className="detail-hero" data-tone={toilet.tone}>
         <nav className="detail-nav">
-          <Link className="btn ghost" href="/">
+          <Link className="btn ghost back-link" href="/">
             Back to home
           </Link>
           <div className="nav-actions">

@@ -3,7 +3,9 @@ import { signIn, signUp } from "@/app/auth/actions";
 import { getCurrentUser } from "@/lib/auth";
 
 type AuthPageProps = {
-  searchParams?: { error?: string; redirectTo?: string };
+  searchParams?:
+    | Promise<{ error?: string | string[]; redirectTo?: string | string[] }>
+    | { error?: string | string[]; redirectTo?: string | string[] };
 };
 
 const errorCopy: Record<string, string> = {
@@ -14,11 +16,15 @@ const errorCopy: Record<string, string> = {
 };
 
 export default async function AuthPage({ searchParams }: AuthPageProps) {
+  const resolvedParams = await searchParams;
+  const errorParam = Array.isArray(resolvedParams?.error)
+    ? resolvedParams?.error[0]
+    : resolvedParams?.error;
+  const redirectParam = Array.isArray(resolvedParams?.redirectTo)
+    ? resolvedParams?.redirectTo[0]
+    : resolvedParams?.redirectTo;
   const user = await getCurrentUser();
-  const redirectTo =
-    searchParams?.redirectTo === "/dashboard/add"
-      ? searchParams.redirectTo
-      : null;
+  const redirectTo = redirectParam === "/dashboard/add" ? redirectParam : null;
 
   if (user) {
     if (user.role !== "admin" && redirectTo) {
@@ -27,9 +33,7 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
     redirect(user.role === "admin" ? "/admin" : "/dashboard");
   }
 
-  const errorMessage = searchParams?.error
-    ? errorCopy[searchParams.error]
-    : null;
+  const errorMessage = errorParam ? errorCopy[errorParam] : null;
 
   return (
     <main className="page auth-page">

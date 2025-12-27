@@ -13,6 +13,9 @@ export function StarIcon({ className }: IconProps) {
       <path
         d="M12 3.5l2.6 5.3 5.9.9-4.3 4.2 1 5.9-5.2-2.7-5.2 2.7 1-5.9-4.3-4.2 5.9-.9L12 3.5z"
         fill="currentColor"
+        stroke="rgba(26, 19, 15, 0.45)"
+        strokeWidth="0.7"
+        strokeLinejoin="round"
       />
     </svg>
   );

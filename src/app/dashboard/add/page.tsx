@@ -14,9 +14,9 @@ export default async function AddToiletPage() {
   }
 
   return (
-    <main className="page">
+    <main className="page with-back">
       <nav className="subpage-nav">
-        <Link className="btn ghost" href="/">
+        <Link className="btn ghost back-link" href="/">
           Back to home
         </Link>
       </nav>

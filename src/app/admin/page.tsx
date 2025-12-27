@@ -70,9 +70,9 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="page admin-page">
+    <main className="page admin-page with-back">
       <nav className="subpage-nav">
-        <Link className="btn ghost" href="/">
+        <Link className="btn ghost back-link" href="/">
           Back to home
         </Link>
       </nav>
