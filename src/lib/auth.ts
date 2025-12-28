@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { cookies } from "next/headers";
+import type { Row } from "@libsql/core/api";
 import { db } from "@/lib/db";
 
 export type User = {
@@ -36,6 +37,36 @@ if (useStub && isDev && !process.env.SESSION_SECRET && !warned) {
 
 export function normalizeEmail(email: string) {
   return email.trim().toLowerCase();
+}
+
+function parseUserRow(row: Row | undefined): User | null {
+  if (!row) {
+    return null;
+  }
+
+  const id = row.id;
+  const email = row.email;
+  const name = row.name;
+  const role = row.role;
+  const status = row.status;
+
+  if (typeof id !== "string" || typeof email !== "string") {
+    return null;
+  }
+
+  if (name !== null && typeof name !== "string") {
+    return null;
+  }
+
+  if (role !== "user" && role !== "admin") {
+    return null;
+  }
+
+  if (status !== "active" && status !== "disabled") {
+    return null;
+  }
+
+  return { id, email, name: name ?? null, role, status };
 }
 
 export async function hashPassword(password: string) {
@@ -110,7 +141,7 @@ export async function getCurrentUser(): Promise<User | null> {
     args: [hashToken(token), nowIso],
   });
 
-  const row = result.rows[0] as User | undefined;
+  const row = parseUserRow(result.rows[0]);
 
   if (!row || row.status !== "active") {
     return null;
