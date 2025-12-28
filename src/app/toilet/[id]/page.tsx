@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { MapPinIcon, StarIcon } from "@/components/Icons";
+import { AppleLogoIcon, GoogleMapsIcon, MapPinIcon, StarIcon } from "@/components/Icons";
 import FindNearestButton from "@/components/FindNearestButton";
+import MapPreview from "@/components/MapPreview";
 import SessionControls from "@/components/SessionControls";
 import {
   defaultReviews,
@@ -80,22 +81,32 @@ export default async function ToiletDetail({ params }: PageProps) {
               <span className="rating-sep">|</span>
               <span className="rating-distance">{toilet.distance} away</span>
             </div>
-            <div className="detail-address">
-              <MapPinIcon className="icon-pin" />
-              <details className="map-actions">
-                <summary aria-label={`Open maps for ${toilet.address}`}>
-                  {toilet.address}
-                </summary>
-                <div className="map-links">
-                  <a href={appleMaps} rel="noreferrer" target="_blank">
-                    Apple Maps
-                  </a>
-                  <a href={googleMaps} rel="noreferrer" target="_blank">
-                    Google Maps
-                  </a>
-                </div>
-              </details>
+          <div className="detail-address">
+            <MapPinIcon className="icon-pin" />
+            <div className="map-actions">
+              <div className="map-address">{toilet.address}</div>
+              <div className="map-links">
+                <a
+                  className="map-link"
+                  href={appleMaps}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <AppleLogoIcon className="map-link-icon" />
+                  Apple Maps
+                </a>
+                <a
+                  className="map-link"
+                  href={googleMaps}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <GoogleMapsIcon className="map-link-icon" />
+                  Google Maps
+                </a>
+              </div>
             </div>
+          </div>
           </div>
           <div className="detail-actions">
             <FindNearestButton
@@ -118,13 +129,9 @@ export default async function ToiletDetail({ params }: PageProps) {
             <div className="panel">
               <div className="panel-head">
                 <h2>Map preview</h2>
-                <span className="panel-note">Tap address to navigate</span>
+                <span className="panel-note">Tap a pin for nearby toilets</span>
               </div>
-              <div className="map-preview" data-tone={toilet.tone}>
-                <div className="map-overlay">
-                  {toilet.name} - {toilet.district}
-                </div>
-              </div>
+              <MapPreview toilet={toilet} nearby={nearby} />
             </div>
 
             <div className="panel">

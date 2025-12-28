@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
 
 :root {
   color-scheme: light;
@@ -803,21 +804,14 @@ img {
 }
 
 .map-actions {
-  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.map-actions summary {
-  cursor: pointer;
+.map-address {
   font-weight: 600;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.map-actions summary::-webkit-details-marker {
-  display: none;
+  line-height: 1.4;
 }
 
 .map-links {
@@ -827,13 +821,23 @@ img {
   margin-top: 8px;
 }
 
-.map-links a {
+.map-link {
   padding: 6px 10px;
   border-radius: 999px;
   border: 1px solid rgba(29, 26, 23, 0.15);
   background: rgba(255, 255, 255, 0.85);
   font-size: 12px;
   font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.map-link-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
 }
 
 .detail-actions {
@@ -901,19 +905,32 @@ img {
   height: 220px;
   position: relative;
   overflow: hidden;
+  background: #fff3e6;
 }
 
-.map-preview::before {
-  content: "";
+.map-canvas {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(255, 255, 255, 0.2) 0,
-    rgba(255, 255, 255, 0.2) 10px,
-    rgba(255, 255, 255, 0.35) 10px,
-    rgba(255, 255, 255, 0.35) 20px
-  );
+  height: 100%;
+  width: 100%;
+}
+
+.map-preview .leaflet-container {
+  height: 100%;
+  width: 100%;
+  font-family: inherit;
+}
+
+.map-preview .leaflet-control-attribution {
+  font-size: 10px;
+  margin: 0 6px 6px 0;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.map-preview .leaflet-interactive {
+  cursor: pointer;
 }
 
 .map-overlay {
@@ -926,6 +943,30 @@ img {
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+
+.map-tooltip {
+  background: rgba(29, 26, 23, 0.85);
+  color: #fff8f1;
+  border: none;
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-weight: 600;
+  box-shadow: 0 8px 16px rgba(29, 26, 23, 0.2);
+}
+
+.map-tooltip-main {
+  background: #1d1a17;
+}
+
+.map-tooltip.leaflet-tooltip-top:before {
+  border-top-color: rgba(29, 26, 23, 0.85);
+}
+
+.map-tooltip-main.leaflet-tooltip-top:before {
+  border-top-color: #1d1a17;
 }
 
 .photo-grid {
@@ -1398,7 +1439,7 @@ img {
     line-height: 1.4;
   }
 
-  .map-actions summary {
+  .map-address {
     font-size: 14px;
     line-height: 1.4;
     word-break: break-word;
