@@ -21,7 +21,7 @@ const hasTursoConfig = Boolean(process.env.TURSO_DATABASE_URL && authToken);
 const useStub = !hasTursoConfig || (isDev && process.env.TURSO_DEV_STUB !== "0");
 let warned = false;
 const sessionSecret =
-  process.env.SESSION_SECRET ?? (useStub ? "dev-session-secret" : undefined);
+  process.env.SESSION_SECRET ?? (useStub ? "dev-session-secret" : "");
 
 if (!sessionSecret) {
   throw new Error("SESSION_SECRET is not set.");
