@@ -1,6 +1,6 @@
 import Link from "next/link";
 import ToiletList from "@/components/ToiletList";
-import { districts, toilets } from "@/lib/mockData";
+import { getDistricts, getToilets } from "@/lib/toiletData";
 
 type LatestPageProps = {
   searchParams?:
@@ -9,6 +9,7 @@ type LatestPageProps = {
 };
 
 export default async function LatestPage({ searchParams }: LatestPageProps) {
+  const [districts, toilets] = await Promise.all([getDistricts(), getToilets()]);
   const resolvedParams = await searchParams;
   const districtParam = Array.isArray(resolvedParams?.district)
     ? resolvedParams?.district[0]

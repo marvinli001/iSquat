@@ -3,7 +3,11 @@ import { StarIcon } from "@/components/Icons";
 import DistrictLatestSection from "@/components/DistrictLatestSection";
 import FindNearestButton from "@/components/FindNearestButton";
 import SessionControls from "@/components/SessionControls";
-import { districts, topRatedToilets, toilets } from "@/lib/mockData";
+import {
+  getDistricts,
+  getToilets,
+  getTopRatedToilets,
+} from "@/lib/toiletData";
 
 const heroStats = [
   { value: "1,248", label: "Approved toilets" },
@@ -25,8 +29,13 @@ const steps = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
   const addMissingHref = "/auth?redirectTo=/dashboard/add";
+  const [districts, toilets, topRatedToilets] = await Promise.all([
+    getDistricts(),
+    getToilets(),
+    getTopRatedToilets(),
+  ]);
 
   return (
     <main className="page home-page">

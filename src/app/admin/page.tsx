@@ -3,63 +3,14 @@ import { redirect } from "next/navigation";
 import { StarIcon } from "@/components/Icons";
 import { getCurrentUser } from "@/lib/auth";
 import { signOut } from "@/app/auth/actions";
-
-const pendingLocations = [
-  {
-    id: "p1",
-    name: "Albert Park Gate WC",
-    district: "CBD",
-    submittedBy: "Ava",
-    photos: 2,
-    note: "Access code after 6pm. Entry near the east gate.",
-  },
-  {
-    id: "p2",
-    name: "Point Chevalier Foreshore WC",
-    district: "West",
-    submittedBy: "Liam",
-    photos: 1,
-    note: "Signage is small. Best landmark is the lifeguard hut.",
-  },
-  {
-    id: "p3",
-    name: "Sylvia Park Upper Level WC",
-    district: "East",
-    submittedBy: "Mia",
-    photos: 3,
-    note: "Located behind the food court elevators.",
-  },
-];
-
-const pendingReviews = [
-  {
-    id: "r1",
-    location: "Wynyard Wharf Restrooms",
-    rating: 4.6,
-    submittedBy: "Noah",
-    photos: 2,
-    snippet: "Clean floors, fresh scent, and short line.",
-  },
-  {
-    id: "r2",
-    location: "Aotea Square Facilities",
-    rating: 4.2,
-    submittedBy: "Harper",
-    photos: 1,
-    snippet: "Crowded after events but staff restock quickly.",
-  },
-  {
-    id: "r3",
-    location: "Takapuna Beach Pavilion",
-    rating: 4.9,
-    submittedBy: "Theo",
-    photos: 3,
-    snippet: "Showers are spotless. Great for beach days.",
-  },
-];
+import { getPendingLocations, getPendingReviews } from "@/lib/toiletData";
 
 export default async function AdminPage() {
   const user = await getCurrentUser();
+  const [pendingLocations, pendingReviews] = await Promise.all([
+    getPendingLocations(),
+    getPendingReviews(),
+  ]);
 
   if (!user) {
     redirect("/auth");
@@ -105,33 +56,37 @@ export default async function AdminPage() {
             </p>
           </div>
         </div>
-        <div className="admin-grid">
-          {pendingLocations.map((item) => (
-            <div className="admin-card" key={item.id}>
-              <div className="admin-card-head">
-                <div>
-                  <div className="admin-card-title">{item.name}</div>
-                  <div className="admin-card-meta">
-                    {item.district} - Submitted by {item.submittedBy}
+        {pendingLocations.length === 0 ? (
+          <p className="panel-body">No pending submissions yet.</p>
+        ) : (
+          <div className="admin-grid">
+            {pendingLocations.map((item) => (
+              <div className="admin-card" key={item.id}>
+                <div className="admin-card-head">
+                  <div>
+                    <div className="admin-card-title">{item.name}</div>
+                    <div className="admin-card-meta">
+                      {item.district} - Submitted by {item.submittedBy}
+                    </div>
                   </div>
+                  <div className="admin-card-badge">{item.photos} photos</div>
                 </div>
-                <div className="admin-card-badge">{item.photos} photos</div>
+                <p className="admin-card-note">{item.note}</p>
+                <div className="admin-actions">
+                  <button className="btn primary" type="button">
+                    Approve
+                  </button>
+                  <button className="btn outline" type="button">
+                    Edit details
+                  </button>
+                  <button className="btn ghost" type="button">
+                    Reject
+                  </button>
+                </div>
               </div>
-              <p className="admin-card-note">{item.note}</p>
-              <div className="admin-actions">
-                <button className="btn primary" type="button">
-                  Approve
-                </button>
-                <button className="btn outline" type="button">
-                  Edit details
-                </button>
-                <button className="btn ghost" type="button">
-                  Reject
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       <section className="section">
@@ -143,37 +98,41 @@ export default async function AdminPage() {
             </p>
           </div>
         </div>
-        <div className="admin-grid">
-          {pendingReviews.map((review) => (
-            <div className="admin-card" key={review.id}>
-              <div className="admin-card-head">
-                <div>
-                  <div className="admin-card-title">{review.location}</div>
-                  <div className="admin-card-meta">
-                    Submitted by {review.submittedBy}
+        {pendingReviews.length === 0 ? (
+          <p className="panel-body">No pending reviews yet.</p>
+        ) : (
+          <div className="admin-grid">
+            {pendingReviews.map((review) => (
+              <div className="admin-card" key={review.id}>
+                <div className="admin-card-head">
+                  <div>
+                    <div className="admin-card-title">{review.location}</div>
+                    <div className="admin-card-meta">
+                      Submitted by {review.submittedBy}
+                    </div>
+                  </div>
+                  <div className="admin-card-rating">
+                    <StarIcon className="icon-star" />
+                    {review.rating.toFixed(1)}
                   </div>
                 </div>
-                <div className="admin-card-rating">
-                  <StarIcon className="icon-star" />
-                  {review.rating.toFixed(1)}
+                <p className="admin-card-note">{review.snippet}</p>
+                <div className="admin-card-meta">{review.photos} photos</div>
+                <div className="admin-actions">
+                  <button className="btn primary" type="button">
+                    Approve
+                  </button>
+                  <button className="btn outline" type="button">
+                    Request edit
+                  </button>
+                  <button className="btn ghost" type="button">
+                    Reject
+                  </button>
                 </div>
               </div>
-              <p className="admin-card-note">{review.snippet}</p>
-              <div className="admin-card-meta">{review.photos} photos</div>
-              <div className="admin-actions">
-                <button className="btn primary" type="button">
-                  Approve
-                </button>
-                <button className="btn outline" type="button">
-                  Request edit
-                </button>
-                <button className="btn ghost" type="button">
-                  Reject
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
     </main>
   );

@@ -2,11 +2,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { signOut } from "@/app/auth/actions";
-import { toilets } from "@/lib/mockData";
+import { getToilets } from "@/lib/toiletData";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
-  const sampleToiletId = toilets[0]?.id ?? "t1";
+  const toilets = await getToilets();
+  const sampleToiletId = toilets[0]?.id ?? null;
 
   if (!user) {
     redirect("/auth");
@@ -73,9 +74,15 @@ export default async function DashboardPage() {
             <div className="rating-card-meta">
               Track photos waiting on admin review.
             </div>
-            <Link className="btn ghost" href={`/toilet/${sampleToiletId}`}>
-              View pending
-            </Link>
+            {sampleToiletId ? (
+              <Link className="btn ghost" href={`/toilet/${sampleToiletId}`}>
+                View pending
+              </Link>
+            ) : (
+              <button className="btn ghost" type="button" disabled>
+                View pending
+              </button>
+            )}
           </div>
         </div>
       </section>

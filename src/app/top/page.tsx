@@ -1,8 +1,9 @@
 import Link from "next/link";
 import ToiletList from "@/components/ToiletList";
-import { topRatedToilets } from "@/lib/mockData";
+import { getTopRatedToilets } from "@/lib/toiletData";
 
-export default function TopPage() {
+export default async function TopPage() {
+  const topRatedToilets = await getTopRatedToilets();
   return (
     <main className="page list-page with-back">
       <nav className="subpage-nav">

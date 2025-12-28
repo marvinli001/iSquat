@@ -5,11 +5,12 @@ import FindNearestButton from "@/components/FindNearestButton";
 import MapPreview from "@/components/MapPreview";
 import SessionControls from "@/components/SessionControls";
 import {
-  defaultReviews,
-  nearbyToilets,
-  reviewsBySlug,
-  toilets,
-} from "@/lib/mockData";
+  getNearbyToilets,
+  getReviewsForToilet,
+  getToiletById,
+  getToilets,
+  isDatabaseMode,
+} from "@/lib/toiletData";
 
 type PageProps = {
   params: Promise<{ id: string }> | { id: string };
@@ -17,10 +18,11 @@ type PageProps = {
 
 export default async function ToiletDetail({ params }: PageProps) {
   const resolvedParams = await params;
-  const toilet = toilets.find((item) => item.id === resolvedParams.id);
+  const toilet = await getToiletById(resolvedParams.id);
 
   if (!toilet) {
-    if (process.env.NODE_ENV !== "production") {
+    if (process.env.NODE_ENV !== "production" && !isDatabaseMode) {
+      const toilets = await getToilets();
       return (
         <main className="page detail-page with-back">
           <nav className="subpage-nav">
@@ -48,13 +50,11 @@ export default async function ToiletDetail({ params }: PageProps) {
     notFound();
   }
 
-  const reviews = reviewsBySlug[toilet.slug] ?? defaultReviews;
+  const reviews = await getReviewsForToilet(toilet.id, toilet.slug);
   const mapQuery = encodeURIComponent(`${toilet.name} ${toilet.address}`);
   const googleMaps = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
   const appleMaps = `https://maps.apple.com/?daddr=${mapQuery}`;
-  const nearby = nearbyToilets
-    .filter((item) => item.slug !== toilet.slug)
-    .slice(0, 3);
+  const nearby = await getNearbyToilets(toilet);
 
   return (
     <main className="page detail-page with-back">
@@ -153,21 +153,25 @@ export default async function ToiletDetail({ params }: PageProps) {
                 <h2>Reviews</h2>
                 <span className="panel-note">Newest first</span>
               </div>
-              <div className="review-list">
-                {reviews.map((review) => (
-                  <div className="review-card" key={review.id}>
-                    <div className="review-head">
-                      <div className="review-name">{review.name}</div>
-                      <div className="review-rating">
-                        <StarIcon className="icon-star" />
-                        <span>{review.rating.toFixed(1)}</span>
+              {reviews.length === 0 ? (
+                <p className="panel-body">No reviews yet.</p>
+              ) : (
+                <div className="review-list">
+                  {reviews.map((review) => (
+                    <div className="review-card" key={review.id}>
+                      <div className="review-head">
+                        <div className="review-name">{review.name}</div>
+                        <div className="review-rating">
+                          <StarIcon className="icon-star" />
+                          <span>{review.rating.toFixed(1)}</span>
+                        </div>
                       </div>
+                      <p className="review-body">{review.body}</p>
+                      <div className="review-date">{review.date}</div>
                     </div>
-                    <p className="review-body">{review.body}</p>
-                    <div className="review-date">{review.date}</div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
               <div className="review-cta">
                 <button className="btn primary" type="button">
                   Sign in to review
