@@ -2,6 +2,7 @@
 
 import crypto from "crypto";
 import { redirect } from "next/navigation";
+import type { Row } from "@libsql/core/api";
 import { db } from "@/lib/db";
 import {
   createSession,
@@ -33,6 +34,38 @@ function getAdminEmails() {
     .filter(Boolean);
 }
 
+type UserRow = {
+  id: string;
+  password_hash: string;
+  role: "user" | "admin";
+  status: "active" | "disabled";
+};
+
+function parseUserRow(row: Row | undefined): UserRow | undefined {
+  if (!row) {
+    return undefined;
+  }
+
+  const id = row.id;
+  const passwordHash = row.password_hash;
+  const role = row.role;
+  const status = row.status;
+
+  if (typeof id !== "string" || typeof passwordHash !== "string") {
+    return undefined;
+  }
+
+  if (role !== "user" && role !== "admin") {
+    return undefined;
+  }
+
+  if (status !== "active" && status !== "disabled") {
+    return undefined;
+  }
+
+  return { id, password_hash: passwordHash, role, status };
+}
+
 export async function signIn(formData: FormData) {
   const emailInput = formData.get("email")?.toString() ?? "";
   const password = formData.get("password")?.toString() ?? "";
@@ -54,14 +87,7 @@ export async function signIn(formData: FormData) {
     args: [email],
   });
 
-  const row = result.rows[0] as
-    | {
-        id: string;
-        password_hash: string;
-        role: "user" | "admin";
-        status: "active" | "disabled";
-      }
-    | undefined;
+  const row = parseUserRow(result.rows[0]);
 
   if (!row || row.status !== "active") {
     redirect(errorUrl("invalid"));
