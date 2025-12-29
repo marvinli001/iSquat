@@ -13,9 +13,16 @@ import {
 
 const allowedRedirects = new Set(["/dashboard/add"]);
 
+const isAllowedRedirect = (path: string) => {
+  if (allowedRedirects.has(path)) {
+    return true;
+  }
+  return /^\/toilet\/[\w-]+\/review$/.test(path);
+};
+
 function getRedirectTarget(formData: FormData) {
   const redirectTo = formData.get("redirectTo")?.toString() ?? "";
-  return allowedRedirects.has(redirectTo) ? redirectTo : null;
+  return isAllowedRedirect(redirectTo) ? redirectTo : null;
 }
 
 function buildAuthErrorUrl(code: string, redirectTarget: string | null) {

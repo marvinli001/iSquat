@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
+import { getDistricts } from "@/lib/toiletData";
+import AddToiletForm from "./AddToiletForm";
 
 export default async function AddToiletPage() {
   const user = await getCurrentUser();
+  const districts = await getDistricts();
 
   if (!user) {
     redirect("/auth?redirectTo=/dashboard/add");
@@ -46,51 +49,7 @@ export default async function AddToiletPage() {
           </div>
         </div>
         <div className="auth-grid">
-          <div className="panel form-panel">
-            <h2>Submission form</h2>
-            <div className="form-field">
-              <label htmlFor="toilet-name">Toilet name</label>
-              <input
-                id="toilet-name"
-                name="name"
-                placeholder="e.g. Queen St Library WC"
-                type="text"
-              />
-            </div>
-            <div className="form-field">
-              <label htmlFor="toilet-address">Address</label>
-              <input
-                id="toilet-address"
-                name="address"
-                placeholder="Street address or landmark"
-                type="text"
-              />
-            </div>
-            <div className="form-field">
-              <label htmlFor="toilet-district">District</label>
-              <input
-                id="toilet-district"
-                name="district"
-                placeholder="CBD, North Shore, etc."
-                type="text"
-              />
-            </div>
-            <div className="form-field">
-              <label htmlFor="toilet-notes">Location notes (optional)</label>
-              <textarea
-                id="toilet-notes"
-                name="notes"
-                placeholder="Access code, opening hours, landmarks..."
-                rows={4}
-              />
-            </div>
-            <button className="btn primary" type="button">
-              Submit for review
-            </button>
-            <p className="form-note">
-              Submissions are reviewed before appearing on iSquat.
-            </p>
-          </div>
+          <AddToiletForm districts={districts} />
 
           <div className="panel">
             <h2>Helpful details</h2>

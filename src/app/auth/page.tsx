@@ -24,7 +24,10 @@ export default async function AuthPage({ searchParams }: AuthPageProps) {
     ? resolvedParams?.redirectTo[0]
     : resolvedParams?.redirectTo;
   const user = await getCurrentUser();
-  const redirectTo = redirectParam === "/dashboard/add" ? redirectParam : null;
+  const isAllowedRedirect =
+    redirectParam === "/dashboard/add" ||
+    (redirectParam ? /^\/toilet\/[\w-]+\/review$/.test(redirectParam) : false);
+  const redirectTo = isAllowedRedirect ? redirectParam : null;
 
   if (user) {
     if (user.role !== "admin" && redirectTo) {

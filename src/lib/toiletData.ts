@@ -207,6 +207,7 @@ const buildToilet = (row: Row): Toilet | null => {
   const accessNotes =
     toStringValue(row.access_notes) ?? "No access notes provided.";
   const tags = parseTags(row.tags);
+  const photoUrl = toStringValue(row.photo_url) ?? undefined;
   const tone = pickTone(slug);
   const distance =
     lat !== null && lng !== null
@@ -231,6 +232,7 @@ const buildToilet = (row: Row): Toilet | null => {
     tags,
     accessNotes,
     tone,
+    photoUrl,
   };
 };
 
@@ -343,6 +345,13 @@ export async function getToilets() {
         t.access_notes AS access_notes,
         t.avg_rating AS rating,
         t.review_count AS review_count,
+        (
+          SELECT url
+          FROM toilet_photos tp
+          WHERE tp.toilet_id = t.id AND tp.status = 'approved'
+          ORDER BY tp.created_at DESC
+          LIMIT 1
+        ) AS photo_url,
         GROUP_CONCAT(tags.name, '|') AS tags
       FROM toilets t
       JOIN districts d ON d.id = t.district_id
@@ -374,6 +383,13 @@ export async function getTopRatedToilets(limit = 10) {
         t.access_notes AS access_notes,
         t.avg_rating AS rating,
         t.review_count AS review_count,
+        (
+          SELECT url
+          FROM toilet_photos tp
+          WHERE tp.toilet_id = t.id AND tp.status = 'approved'
+          ORDER BY tp.created_at DESC
+          LIMIT 1
+        ) AS photo_url,
         GROUP_CONCAT(tags.name, '|') AS tags
       FROM toilets t
       JOIN districts d ON d.id = t.district_id
@@ -410,6 +426,13 @@ export async function getToiletById(idOrSlug: string) {
         t.access_notes AS access_notes,
         t.avg_rating AS rating,
         t.review_count AS review_count,
+        (
+          SELECT url
+          FROM toilet_photos tp
+          WHERE tp.toilet_id = t.id AND tp.status = 'approved'
+          ORDER BY tp.created_at DESC
+          LIMIT 1
+        ) AS photo_url,
         GROUP_CONCAT(tags.name, '|') AS tags
       FROM toilets t
       JOIN districts d ON d.id = t.district_id
@@ -423,6 +446,28 @@ export async function getToiletById(idOrSlug: string) {
   );
 
   return rows[0] ?? null;
+}
+
+export async function getToiletPhotos(toiletId: string, limit = 3) {
+  if (!isDatabaseMode) {
+    const toilet = mockToilets.find((item) => item.id === toiletId);
+    return toilet?.photoUrl ? [toilet.photoUrl] : [];
+  }
+
+  const result = await db.execute({
+    sql: `
+      SELECT url
+      FROM toilet_photos
+      WHERE toilet_id = ? AND status = 'approved'
+      ORDER BY created_at DESC
+      LIMIT ?
+    `,
+    args: [toiletId, limit],
+  });
+
+  return result.rows
+    .map((row) => toStringValue(row.url))
+    .filter((url): url is string => Boolean(url));
 }
 
 export async function getNearbyToilets(toilet: Toilet, limit = 3) {
@@ -445,6 +490,13 @@ export async function getNearbyToilets(toilet: Toilet, limit = 3) {
         t.access_notes AS access_notes,
         t.avg_rating AS rating,
         t.review_count AS review_count,
+        (
+          SELECT url
+          FROM toilet_photos tp
+          WHERE tp.toilet_id = t.id AND tp.status = 'approved'
+          ORDER BY tp.created_at DESC
+          LIMIT 1
+        ) AS photo_url,
         GROUP_CONCAT(tags.name, '|') AS tags
       FROM toilets t
       JOIN districts d ON d.id = t.district_id
@@ -498,7 +550,14 @@ export async function getPendingLocations() {
         d.name AS district,
         s.access_notes AS note,
         COALESCE(u.name, u.email) AS submitted_by,
-        0 AS photos
+        COALESCE(
+          (
+            SELECT COUNT(*)
+            FROM toilet_photos tp
+            WHERE tp.toilet_id = s.resolved_toilet_id
+          ),
+          0
+        ) AS photos
       FROM toilet_submissions s
       JOIN districts d ON d.id = s.district_id
       LEFT JOIN users u ON u.id = s.user_id

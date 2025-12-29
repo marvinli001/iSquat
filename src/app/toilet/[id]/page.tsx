@@ -8,6 +8,7 @@ import {
   getNearbyToilets,
   getReviewsForToilet,
   getToiletById,
+  getToiletPhotos,
   getToilets,
   isDatabaseMode,
 } from "@/lib/toiletData";
@@ -55,6 +56,11 @@ export default async function ToiletDetail({ params }: PageProps) {
   const googleMaps = `https://www.google.com/maps/dir/?api=1&destination=${mapQuery}`;
   const appleMaps = `https://maps.apple.com/?daddr=${mapQuery}`;
   const nearby = await getNearbyToilets(toilet);
+  const photos = await getToiletPhotos(toilet.id);
+  const visiblePhotos = photos.slice(0, 3);
+  const placeholders = Math.max(0, 3 - visiblePhotos.length);
+  const placeholderTones = [toilet.tone, "citrus", "amber"];
+  const reviewHref = `/toilet/${toilet.id}/review`;
 
   return (
     <main className="page detail-page with-back">
@@ -81,41 +87,41 @@ export default async function ToiletDetail({ params }: PageProps) {
               <span className="rating-sep">|</span>
               <span className="rating-distance">{toilet.distance} away</span>
             </div>
-          <div className="detail-address">
-            <MapPinIcon className="icon-pin" />
-            <div className="map-actions">
-              <div className="map-address">{toilet.address}</div>
-              <div className="map-links">
-                <a
-                  className="map-link"
-                  href={appleMaps}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <AppleLogoIcon className="map-link-icon" />
-                  Apple Maps
-                </a>
-                <a
-                  className="map-link"
-                  href={googleMaps}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <GoogleMapsIcon className="map-link-icon" />
-                  Google Maps
-                </a>
+            <div className="detail-address">
+              <MapPinIcon className="icon-pin" />
+              <div className="map-actions">
+                <div className="map-address">{toilet.address}</div>
+                <div className="map-links">
+                  <a
+                    className="map-link"
+                    href={appleMaps}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <AppleLogoIcon className="map-link-icon" />
+                    Apple Maps
+                  </a>
+                  <a
+                    className="map-link"
+                    href={googleMaps}
+                    rel="noreferrer"
+                    target="_blank"
+                  >
+                    <GoogleMapsIcon className="map-link-icon" />
+                    Google Maps
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
           </div>
           <div className="detail-actions">
             <FindNearestButton
               className="btn primary"
               label="Find nearest toilet"
             />
-            <button className="btn outline" type="button">
+            <Link className="btn outline" href={reviewHref}>
               Add a review
-            </button>
+            </Link>
             <p className="note">
               Sign in required to submit reviews or upload photos.
             </p>
@@ -142,9 +148,20 @@ export default async function ToiletDetail({ params }: PageProps) {
                 </span>
               </div>
               <div className="photo-grid">
-                <div className="photo-tile" data-tone={toilet.tone} />
-                <div className="photo-tile" data-tone="citrus" />
-                <div className="photo-tile" data-tone="amber" />
+                {visiblePhotos.map((photoUrl) => (
+                  <div
+                    className="photo-tile"
+                    key={photoUrl}
+                    style={{ backgroundImage: `url(${photoUrl})` }}
+                  />
+                ))}
+                {Array.from({ length: placeholders }).map((_, index) => (
+                  <div
+                    className="photo-tile"
+                    data-tone={placeholderTones[index % placeholderTones.length]}
+                    key={`placeholder-${index}`}
+                  />
+                ))}
               </div>
             </div>
 
@@ -173,12 +190,12 @@ export default async function ToiletDetail({ params }: PageProps) {
                 </div>
               )}
               <div className="review-cta">
-                <button className="btn primary" type="button">
-                  Sign in to review
-                </button>
-                <button className="btn ghost" type="button">
+                <Link className="btn primary" href={reviewHref}>
+                  Write a review
+                </Link>
+                <Link className="btn ghost" href={reviewHref}>
                   Upload photos
-                </button>
+                </Link>
               </div>
             </div>
           </div>

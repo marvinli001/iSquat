@@ -12,6 +12,7 @@ export type Toilet = {
   tags: string[];
   accessNotes: string;
   tone: string;
+  photoUrl?: string;
 };
 
 export type Review = {

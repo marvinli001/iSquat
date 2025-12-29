@@ -63,13 +63,21 @@ export default async function Home() {
               href={`/toilet/${toilet.id}`}
               key={toilet.id}
             >
-              <div className="rating-card-head">
-                <div className="rating-card-title">{toilet.name}</div>
-                <div className="rating-card-score">
+              <div
+                className="card-media"
+                data-tone={toilet.tone}
+                style={
+                  toilet.photoUrl
+                    ? { backgroundImage: `url(${toilet.photoUrl})` }
+                    : undefined
+                }
+              >
+                <div className="card-rating">
                   <StarIcon className="icon-star" />
-                  {toilet.rating.toFixed(1)}
+                  <span>{toilet.rating.toFixed(1)}</span>
                 </div>
               </div>
+              <div className="rating-card-title">{toilet.name}</div>
               <div className="rating-card-distance">{toilet.distance} away</div>
               {toilet.tags[0] ? (
                 <div className="rating-card-tags">
