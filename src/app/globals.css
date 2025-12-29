@@ -193,7 +193,7 @@ img {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: 1.3fr 0.7fr;
+  grid-template-columns: 1fr;
   gap: 32px;
   margin-top: 28px;
   align-items: center;
@@ -226,7 +226,26 @@ img {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+}
+
+.hero-links {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.hero-links-sep {
+  opacity: 0.5;
+}
+
+.link-inline {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
 .hero-stats {
