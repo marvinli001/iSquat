@@ -1736,8 +1736,14 @@ img {
   }
 
   .detail-address {
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-start;
+    flex-wrap: nowrap;
+  }
+
+  .detail-address .map-actions {
+    flex: 1;
+    min-width: 0;
   }
 
   .detail-actions {
