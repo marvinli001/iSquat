@@ -79,13 +79,6 @@ export default async function Home() {
               </div>
               <div className="rating-card-title">{toilet.name}</div>
               <div className="rating-card-distance">{toilet.distance} away</div>
-              {toilet.tags[0] ? (
-                <div className="rating-card-tags">
-                  <span className="tag" key={toilet.tags[0]}>
-                    {toilet.tags[0]}
-                  </span>
-                </div>
-              ) : null}
             </Link>
           ))}
         </div>
