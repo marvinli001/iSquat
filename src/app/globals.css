@@ -506,10 +506,18 @@ img {
   flex-direction: column;
   gap: 10px;
   transition: transform 0.2s ease;
+  position: relative;
 }
 
 .rating-card:hover {
   transform: translateY(-4px);
+}
+
+.rating-card-link {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: inherit;
 }
 
 .rating-card-head {
@@ -539,6 +547,44 @@ img {
 .rating-card-distance {
   font-size: 12px;
   color: var(--muted);
+}
+
+.location-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(26, 19, 15, 0.18);
+  background: rgba(255, 255, 255, 0.9);
+  color: #1d1a17;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.location-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(29, 26, 23, 0.18);
+}
+
+.location-pill:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
+  transform: none;
+}
+
+.location-pill[data-status="error"] {
+  border-color: rgba(255, 79, 44, 0.4);
+  color: #7a2d1a;
+}
+
+.location-pill-icon {
+  width: 14px;
+  height: 14px;
+  color: #1d1a17;
 }
 
 .cta-panel {
@@ -1401,6 +1447,11 @@ img {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   }
 
+  .top-nav .location-pill {
+    justify-self: end;
+    width: auto;
+  }
+
   .nav-actions .btn,
   .nav-actions form,
   .nav-actions form .btn {
@@ -1546,18 +1597,23 @@ img {
   }
 
   .detail-page .review-cta {
-    flex-direction: column;
-    align-items: flex-start;
+    width: 100%;
+  }
+
+  .detail-page .panel .review-cta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
     width: 100%;
   }
 
   .detail-page .review-cta .btn {
-    width: auto;
-    min-width: 160px;
+    width: 100%;
+    min-width: 0;
     max-width: 100%;
-    min-height: 42px;
-    font-size: 13px;
-    padding: 8px 14px;
+    min-height: 38px;
+    font-size: 12px;
+    padding: 6px 12px;
   }
 
   .detail-page .panel .btn {
@@ -1567,6 +1623,15 @@ img {
     min-height: 42px;
     font-size: 13px;
     padding: 8px 14px;
+  }
+
+  .detail-page .panel .review-cta .btn {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 38px;
+    font-size: 12px;
+    padding: 6px 12px;
   }
 
   .detail-body {
@@ -2106,7 +2171,15 @@ img {
     padding: 10px 16px;
   }
 
-  .detail-page .review-cta .btn,
+  .detail-page .review-cta .btn {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 36px;
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
   .detail-page .panel .btn {
     width: auto;
     min-width: 150px;
@@ -2114,6 +2187,22 @@ img {
     min-height: 40px;
     font-size: 13px;
     padding: 8px 12px;
+  }
+
+  .detail-page .panel .review-cta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    width: 100%;
+  }
+
+  .detail-page .panel .review-cta .btn {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 36px;
+    font-size: 12px;
+    padding: 6px 10px;
   }
 
   .list-page {
