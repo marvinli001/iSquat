@@ -1452,6 +1452,15 @@ img {
     width: auto;
   }
 
+  .home-page .nav-actions {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: auto;
+    display: flex;
+    align-items: center;
+  }
+
   .nav-actions .btn,
   .nav-actions form,
   .nav-actions form .btn {
